@@ -4,4 +4,4 @@ const errorHandler = (error, req, res, next) => {
     res.status(code).json({code, status : false, message: error.message, stack: error.stack})
 }
 
-module.exports = errorHandler
+module.exports = errorHandler;
