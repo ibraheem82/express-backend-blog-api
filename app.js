@@ -5,7 +5,7 @@ const morgan = require("morgan")
 dotenv.config()
 const connectMongodb = require("./init/mongodb")
 const { authRoute } = require('./routes/');
-const { errorHandler } = require('./middlewares/errorHandler');
+const { errorHandler } = require('./middlewares');
 
 const app = express();
 
