@@ -19,4 +19,16 @@ const signupValidator = [
 
 
 
-module.exports = { signupValidator }
+
+const signinValidator = [
+       check("email")
+              .isEmail()
+              .withMessage("Invalid email")
+              .notEmpty()
+              .withMessage("Email is required."),
+              check("password").notEmpty().withMessage("Password is required")
+
+]
+
+
+module.exports = { signupValidator, signinValidator }
