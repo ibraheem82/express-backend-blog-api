@@ -71,4 +71,9 @@ const recoverPasswordValidator = [
             .withMessage("Password is required")
 
 ]
-module.exports = { signupValidator, signinValidator, emailValidator, verifyUserValidator, recoverPasswordValidator }
+
+const changePasswordValidator = [
+       check("oldPassword").notEmpty().withMessage("Old password is required"),
+       check("newPassword").notEmpty().withMessage("New Password is required")
+]
+module.exports = { signupValidator, signinValidator, emailValidator, verifyUserValidator, recoverPasswordValidator, changePasswordValidator }
