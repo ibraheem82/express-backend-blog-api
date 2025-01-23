@@ -6,6 +6,9 @@ const generateCode = require("../utils/generateCode");
 const sendEmail = require("../utils/sendEmai");
 
 
+
+
+
 const signup = async(req, res, next) => {
     try {
         const {name, email, password, role} = req.body;
@@ -20,7 +23,7 @@ const signup = async(req, res, next) => {
         const newUser = new User({name, email, password:hashedPassword, role})
         await newUser.save();
 
-        res.status(201).json({code: 201, status:true, message: "User registererd successfully"})
+        res.status(201).json({code: 201, status:true, message: "User registered successfully"})
     } catch (error) {
         next(error)
     }
@@ -78,7 +81,7 @@ const verifyCode = async(req, res, next) => {
             subject: "Email verification code",
             code,
             content: "Verify your account."
-        })
+        });
 
 
         res.status(200).json({code: 200, status: true, message: "User verification code sent successfully"})
@@ -185,4 +188,42 @@ const recoverPassword = async(req, res, next) => {
         next(error);
     }
 }
-module.exports = {signup, signin, verifyCode, verifyUser, forgotPasswordCode, recoverPassword};
+
+
+
+const changePassword = async(req, res, next) => {
+    try {
+        const {oldPassword, newPassword} = req.body;
+
+        const {_id} = req.user; // payload from isAuth
+
+        const user = await User.findById(_id);
+
+        if(!user){
+            res.code = 404;
+            throw new Error("User not found");
+        }
+
+        const match = await comparePassword(oldPassword, user.password);
+        if(!match){
+            res.code = 400;
+            throw new Error("Invalid old password");
+        }
+
+        if(oldPassword === newPassword){
+            res.code = 400;
+            throw new Error("New password cannot be same as old password");
+        }
+
+        const hashedPassword = await hashPassword(newPassword);
+        user.password = hashedPassword;
+        await user.save();
+
+        res.status(200).json({code: 200, status: true, message: "Password changed successfully"});
+
+        
+    } catch (error) {
+        next(error);
+    }
+}
+module.exports = {signup, signin, verifyCode, verifyUser, forgotPasswordCode, recoverPassword, changePassword};
