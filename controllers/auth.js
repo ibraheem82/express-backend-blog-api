@@ -226,4 +226,70 @@ const changePassword = async(req, res, next) => {
         next(error);
     }
 }
-module.exports = {signup, signin, verifyCode, verifyUser, forgotPasswordCode, recoverPassword, changePassword};
+
+
+
+
+const updateProfile = async(req, res, next) => {
+    try {
+        const { _id } = req.user;
+    const { name, email} = req.body;
+
+    const user = await User.findById(_id).select(
+        "-password -verificationCode -forgotPasswordCode"
+      );;
+    if (!user) {
+      res.code = 404;
+      throw new Error("User not found");
+    }
+
+
+    /*
+        If the client provides a new email, the code checks if another user already has that email.
+
+User.findOne({ email }) searches for a user with the same email.
+
+The condition String(user._id) !== String(isUserExist._id) ensures that the email is not already used by another user (excluding the current user).
+
+If the email is already in use, a 400 Bad Request error is thrown.
+
+
+    */
+    if (email) {
+        const isUserExist = await User.findOne({ email });
+        if (
+          isUserExist &&
+          isUserExist.email === email &&
+          String(user._id) !== String(isUserExist._id)
+        ) {
+          res.code = 400;
+          throw new Error("Email already exist");
+        }
+      }
+
+    //  * The user's name and email are updated only if new values are provided in the request body (name and email).
+
+// * If no new value is provided, the existing value is retained (using the ternary operator ? :).
+    user.name = name  ? name : user.name;
+    user.email = email ? email: user.email;
+
+
+    // if your email is updated, you will have to verify again.
+    if(email) {
+        user.isVerified = false;
+    }
+
+    await user.save();
+
+
+    res.status(200).json({code: 200, status: true, message: "Profile updated successfully", data: {user}});
+        
+    } catch (error) {
+        next(error);
+    }
+}
+
+
+
+
+module.exports = {signup, signin, verifyCode, verifyUser, forgotPasswordCode, recoverPassword, changePassword, updateProfile};
