@@ -11,6 +11,7 @@ const isAuth = async(req, res, next) => {
 
         if(token){
             const payload  = jwt.verify(token, jwtSecret)
+            // console.log(payload);
 
             if(payload){
                 req.user = {
