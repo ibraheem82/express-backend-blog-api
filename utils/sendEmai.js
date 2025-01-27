@@ -9,7 +9,7 @@ const sendMail = async ({ emailTo, subject, code, content }) => {
       port: 465,
       secure: true,
       auth: {
-        user: gmail_user,
+        user: gmail_user, // ur own mail
         pass: gmail_password,
       },
     });
