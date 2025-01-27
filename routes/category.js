@@ -23,5 +23,13 @@ router.post('/',
       validate,
       categoryController.updateCategory
     );
-    
+    router.delete(
+      "/:id",
+      isAuth,
+      isAdmin,
+      idValidator,
+      validate,
+      categoryController.deleteCategory
+    );
+
 module.exports = router;
