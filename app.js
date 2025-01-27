@@ -4,7 +4,7 @@ const dotenv = require('dotenv');
 const morgan = require("morgan")
 dotenv.config()
 const connectMongodb = require("./init/mongodb")
-const { authRoute } = require('./routes/');
+const { authRoute, categoryRoute } = require('./routes/');
 const { errorHandler } = require('./middlewares');
 const notfound = require("./controllers/notfound")
 
@@ -20,6 +20,7 @@ app.use(morgan('dev'))
 
 // Routes
 app.use("/api/v1/auth", authRoute)
+app.use("/api/v1/category", categoryRoute)
 
 // Not find route
 app.use("*", notfound);
