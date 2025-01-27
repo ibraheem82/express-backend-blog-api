@@ -68,4 +68,28 @@ const addCategory = async (req, res, next) => {
       next(error);
     }
   };
-module.exports = {addCategory, updateCategory,}
+
+
+
+  const deleteCategory = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+  
+      const category = await Category.findById(id);
+      if (!category) {
+        res.code = 404;
+        throw new Error("Category not found");
+      }
+  
+      await Category.findByIdAndDelete(id);
+  
+      res.status(200).json({
+        code: 200,
+        staus: true,
+        message: "Category deleted successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+module.exports = {addCategory, updateCategory, deleteCategory}
