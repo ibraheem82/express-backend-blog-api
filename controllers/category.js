@@ -92,4 +92,71 @@ const addCategory = async (req, res, next) => {
       next(error);
     }
   };
-module.exports = {addCategory, updateCategory, deleteCategory}
+
+
+  /*
+    Example Request and Response
+Request
+URL: /categories?q=tech&size=5&page=2
+
+Query Parameters:
+
+q: tech (search term).
+
+size: 5 (5 items per page).
+
+page: 2 (second page). 
+
+
+
+
+  */
+
+  const getCategories = async (req, res, next) => {
+    try {
+      const { q, size, page } = req.query;
+      let query = {};
+  
+      // Parse and Set Defaults for Pagination:
+      const sizeNumber = parseInt(size) || 10;
+      const pageNumber = parseInt(page) || 1;
+  
+      if (q) {
+//         If a search query (q) is provided, it creates a case-insensitive regular expression (RegExp(q, "i")) to search for matches in the title or desc fields.
+
+// The $or operator ensures that either field can match the search term.
+        const search = RegExp(q, "i");
+  
+        query = { $or: [{ title: search }, { desc: search }] };
+      }
+  
+      // Counts the total number of documents that match the query (for pagination).
+      const total = await Category.countDocuments(query);
+
+      // Determines the total number of pages based on the total documents and items per page.
+      const pages = Math.ceil(total / sizeNumber);
+  
+
+//       Retrieves the categories that match the query.
+
+// Skips the appropriate number of documents for pagination ((pageNumber - 1) * sizeNumber).
+
+// Limits the results to sizeNumber items per page.
+
+// Sorts the results by _id in descending order (most recent first).
+      const categories = await Category.find(query)
+        .skip((pageNumber - 1) * sizeNumber)
+        .limit(sizeNumber)
+        .sort({ _id: -1 });
+  
+      res.status(200).json({
+        code: 200,
+        status: true,
+        message: "Get category list successfully",
+        data: { categories, total, pages },
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+module.exports = {addCategory, updateCategory, deleteCategory, getCategories}
