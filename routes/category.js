@@ -32,7 +32,16 @@ router.post('/',
       categoryController.deleteCategory
     );
   
-    router.get("/", isAuth, categoryController.getCategories);
+  router.get("/", isAuth, categoryController.getCategories);
+
+
+  router.get(
+    "/:id",
+    isAuth,
+    idValidator,
+    validate,
+    categoryController.getCategory
+  );  
 
 
 
